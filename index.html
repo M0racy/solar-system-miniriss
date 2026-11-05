@@ -152,9 +152,105 @@ details#about summary:hover{color:var(--ink)}
   .check{min-height:38px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* Rideau d'accueil MiniRiss */
+#curtain{position:fixed;inset:0;z-index:1000;overflow:hidden;pointer-events:auto;cursor:default}
+#curtain.gone{display:none}
+#curtain .panel{position:absolute;top:0;bottom:0;width:51%;
+  background:
+    linear-gradient(180deg,rgba(0,0,0,.35),transparent 18%,transparent 80%,rgba(0,0,0,.45)),
+    repeating-linear-gradient(90deg,#5c0610 0,#a3121f 3.2%,#d42a35 5%,#a3121f 7%,#5c0610 10%);
+  box-shadow:inset 0 -26px 0 -18px #e7b84a;
+  transition:transform 1.9s cubic-bezier(.7,0,.25,1),filter 1.9s;will-change:transform}
+#curtain .left{left:0;transform-origin:left center;border-right:2px solid #3a030a}
+#curtain .right{right:0;transform-origin:right center;border-left:2px solid #3a030a}
+#curtain .panel::after{content:"";position:absolute;left:0;right:0;bottom:0;height:22px;
+  background:repeating-linear-gradient(90deg,#f3cf6b 0 3px,#b8862a 3px 6px);
+  -webkit-mask:linear-gradient(#000,#000 40%,transparent);mask:linear-gradient(#000,#000 40%,transparent)}
+#curtain .valance{position:absolute;left:0;right:0;top:0;height:clamp(60px,11vh,110px);z-index:2;
+  background:repeating-linear-gradient(90deg,#6a0812 0,#b8182a 4%,#6a0812 8%);
+  -webkit-mask:radial-gradient(40px 26px at 50% 100%,transparent 98%,#000) 0 0/80px 100%;
+          mask:radial-gradient(40px 26px at 50% 100%,transparent 98%,#000) 0 0/80px 100%;
+  border-top:6px solid #e7b84a;box-shadow:0 6px 18px rgba(0,0,0,.6);
+  transition:transform 1.2s cubic-bezier(.6,0,.3,1) .9s}
+#curtain .welcome{position:absolute;inset:0;z-index:3;display:grid;place-content:center;justify-items:center;gap:18px;
+  text-align:center;padding:0 16px;transition:opacity .6s}
+#curtain h2{margin:0;font:italic 600 clamp(34px,7.5vw,84px)/1.05 var(--f-display);color:#ffd77a;
+  text-shadow:0 2px 0 #7a4b06,0 0 26px rgba(255,190,80,.55),0 6px 24px rgba(0,0,0,.7)}
+#curtain h2 span{display:inline-block;opacity:0;transform:translateY(.35em) scale(.9);animation:mrLetter .5s forwards}
+@keyframes mrLetter{to{opacity:1;transform:none}}
+#curtain .sub{font:500 12px/1 var(--f-ui);letter-spacing:.32em;text-transform:uppercase;color:#f3d79a;opacity:.85}
+#curtain .dots::after{content:"";animation:mrDots 1.2s steps(4) infinite}
+@keyframes mrDots{0%{content:""}25%{content:"."}50%{content:".."}75%{content:"..."}}
+#curtain .spot{position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(ellipse 45% 55% at 50% 52%,rgba(255,220,150,.22),transparent 70%)}
+#curtain.open .left{transform:translateX(-96%) scaleX(.55);filter:brightness(.7)}
+#curtain.open .right{transform:translateX(96%) scaleX(.55);filter:brightness(.7)}
+#curtain.open .valance{transform:translateY(-110%)}
+#curtain.open .welcome,#curtain.open .spot{opacity:0}
+#curtain.open{pointer-events:none}
+#curtain .snd{position:absolute;z-index:4;right:16px;bottom:34px;font:500 12px var(--f-ui);color:#ffe3a3;
+  background:rgba(40,4,8,.6);border:1px solid #e7b84a;border-radius:999px;padding:8px 14px;cursor:pointer}
+@media (prefers-reduced-motion:reduce){
+  #curtain .panel,#curtain .valance{transition:opacity .6s!important}
+  #curtain.open .left,#curtain.open .right,#curtain.open .valance{transform:none;opacity:0}
+  #curtain h2 span{animation:none;opacity:1;transform:none}}
 </style>
 </head>
 <body>
+
+<div id="curtain" role="status" aria-label="Bienvenue à MiniRiss — chargement">
+  <div class="panel left"></div><div class="panel right"></div>
+  <div class="spot"></div>
+  <div class="valance"></div>
+  <div class="welcome">
+    <h2 id="welcomeTxt">Bienvenue à MiniRiss</h2>
+    <div class="sub">Chargement<span class="dots"></span></div>
+  </div>
+  <button class="snd" id="curtainSnd" type="button" hidden>🔊 Écouter</button>
+</div>
+<script>
+(function(){
+  var cur=document.getElementById('curtain'),h=document.getElementById('welcomeTxt'),snd=document.getElementById('curtainSnd');
+  var TEXT='Bienvenue à MiniRiss',MIN_MS=3200,MAX_MS=15000,t0=Date.now(),ready=false,pageLoaded=false,opened=false,spoken=false;
+  // lettres qui apparaissent une à une, au rythme de la voix
+  h.textContent='';
+  TEXT.split('').forEach(function(c,i){var sp=document.createElement('span');sp.textContent=c===' '?'\u00a0':c;sp.style.animationDelay=(0.25+i*0.075)+'s';h.appendChild(sp);});
+  function speak(){
+    if(spoken||opened||!('speechSynthesis' in window))return;
+    try{
+      var u=new SpeechSynthesisUtterance('Bienvenue à Mini Riss !');
+      u.lang='fr-FR';u.rate=0.92;u.pitch=1.1;
+      var vs=speechSynthesis.getVoices().filter(function(v){return /^fr/i.test(v.lang);});
+      if(vs.length)u.voice=vs.find(function(v){return /fr-FR/i.test(v.lang);})||vs[0];
+      u.onstart=function(){spoken=true;snd.hidden=true;};
+      u.onerror=function(){if(!spoken&&!opened)snd.hidden=false;};
+      speechSynthesis.cancel();speechSynthesis.speak(u);
+      // si le navigateur bloque la lecture automatique, proposer un bouton
+      setTimeout(function(){if(!spoken&&!opened)snd.hidden=false;},900);
+    }catch(e){}
+  }
+  if('speechSynthesis' in window){
+    if(speechSynthesis.getVoices().length)setTimeout(speak,250);
+    else{var once=false;var go=function(){if(!once){once=true;setTimeout(speak,150);}};speechSynthesis.onvoiceschanged=go;setTimeout(go,600);}
+  }
+  snd.addEventListener('click',function(e){e.stopPropagation();spoken=false;speak();});
+  cur.addEventListener('pointerdown',function(){if(!spoken)speak();});
+  function tryOpen(){
+    if(opened||!(ready&&pageLoaded))return;
+    var wait=Math.max(0,MIN_MS-(Date.now()-t0));
+    setTimeout(openCurtain,wait);
+  }
+  function openCurtain(){
+    if(opened)return;opened=true;snd.hidden=true;cur.classList.add('open');cur.setAttribute('aria-label','Chargement terminé');
+    setTimeout(function(){cur.classList.add('gone');},3300);
+  }
+  window.addEventListener('miniriss-ready',function(){ready=true;tryOpen();});
+  if(document.readyState==='complete')pageLoaded=true;
+  else window.addEventListener('load',function(){pageLoaded=true;tryOpen();});
+  setTimeout(openCurtain,MAX_MS); // filet de sécurité
+})();
+</script>
 
 <canvas id="scene" tabindex="0" aria-label="Vue 3D du système solaire"></canvas>
 <div id="loading">Calcul des surfaces planétaires…</div>
@@ -768,10 +864,13 @@ function loop(now){const dt=Math.min(.1,(now-last)/1000);last=now;
   requestAnimationFrame(loop);}
 
 function start(){
+  // le rideau s'ouvre quand les textures (Terre, Lune) sont chargées
+  var texDone=false,mgr=THREE.DefaultLoadingManager;mgr.onLoad=function(){if(!texDone){texDone=true;window.dispatchEvent(new Event('miniriss-ready'));}};
   build();buildChips();resize();setSpeed(state.speedIdx);
   update(state.jd);
   state.focus=byId.sun;controls.target.set(0,0,0);camera.position.set(.35,.62,1).normalize().multiplyScalar(340*fitK());
   $('loading').hidden=true;
+  setTimeout(function(){if(!texDone){texDone=true;window.dispatchEvent(new Event('miniriss-ready'));}},8000);
   try{const d=new Date();$('dateIn').value=d.toISOString().slice(0,10);}catch(e){}
   requestAnimationFrame(t=>{last=t;loop(t);});}
 requestAnimationFrame(()=>setTimeout(start,30));
