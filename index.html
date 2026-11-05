@@ -215,12 +215,22 @@ details#about summary:hover{color:var(--ink)}
 #curtain .poster::before{left:6px}#curtain .poster::after{right:6px}
 @media (max-width:560px){#curtain .poster{padding:8px 10px 10px;max-width:calc(100% - 14px)}#curtain .poster b{font-size:min(4.4vw,24px)}#curtain .poster small{font-size:8px;letter-spacing:.2em}
   #curtain .poster::before,#curtain .poster::after{display:none}}
+
+/* Personnages sur le rideau (images fournies par le propriétaire du site) */
+#curtain .hero{position:absolute;bottom:34px;height:min(40vh,48vw);width:auto;max-width:90%;pointer-events:none;user-select:none;
+  filter:drop-shadow(0 10px 14px rgba(0,0,0,.6)) drop-shadow(0 0 2px rgba(255,215,120,.6));
+  animation:mrBob 2.6s ease-in-out infinite}
+#curtain .hero.sonic{left:12%;--r:-3deg}
+#curtain .hero.spider{right:12%;--r:3deg;animation-delay:-1.3s}
+@keyframes mrBob{0%,100%{transform:translateY(0) rotate(var(--r))}50%{transform:translateY(-10px) rotate(calc(var(--r) * -1))}}
+@media (max-width:560px){#curtain .hero{height:min(30vh,40vw)}#curtain .hero.sonic{left:6%}#curtain .hero.spider{right:6%;bottom:84px}}
+@media (prefers-reduced-motion:reduce){#curtain .hero{animation:none}}
 </style>
 </head>
 <body>
 
 <div id="curtain" role="status" aria-label="Bienvenue à MiniRiss — chargement">
-  <div class="panel left"><div class="poster sonic"><small>En piste</small><b>SONIC</b></div></div><div class="panel right"><div class="poster spider"><small>En piste</small><b>SPIDER-MILES</b></div></div>
+  <div class="panel left"><div class="poster sonic"><small>En piste</small><b>SONIC</b></div><img class="hero sonic" src="img/sonic.webp" alt="Sonic"></div><div class="panel right"><div class="poster spider"><small>En piste</small><b>SPIDER-MILES</b></div><img class="hero spider" src="img/spider-miles.webp" alt="Spider-Miles"></div>
   <div class="spot"></div>
   <div class="valance"></div>
   <div class="welcome">
