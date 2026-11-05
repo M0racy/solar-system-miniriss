@@ -195,12 +195,32 @@ details#about summary:hover{color:var(--ink)}
   #curtain .panel,#curtain .valance{transition:opacity .6s!important}
   #curtain.open .left,#curtain.open .right,#curtain.open .valance{transform:none;opacity:0}
   #curtain h2 span{animation:none;opacity:1;transform:none}}
+
+/* Affiches nominatives sur chaque pan du rideau */
+#curtain .poster{position:absolute;top:calc(clamp(60px,11vh,110px) + 5vh);left:50%;transform:translateX(-50%) rotate(var(--rot));
+  padding:14px 22px 16px;border-radius:10px;text-align:center;white-space:nowrap;
+  border:3px solid #e7b84a;box-shadow:0 0 0 2px #5a3a06,0 10px 26px rgba(0,0,0,.55),inset 0 0 0 2px rgba(255,230,160,.35)}
+#curtain .poster small{display:block;font:600 10px/1 var(--f-ui);letter-spacing:.3em;text-transform:uppercase;color:#ffe3a3;margin-bottom:8px}
+#curtain .poster b{display:block;font:italic 600 clamp(26px,4.6vw,54px)/1 var(--f-display);letter-spacing:.02em}
+#curtain .poster.sonic{--rot:-4deg;background:
+    repeating-linear-gradient(100deg,transparent 0 18px,rgba(255,255,255,.10) 18px 20px),
+    radial-gradient(circle at 30% 30%,#2f7bff,#0b2c8f 75%)}
+#curtain .poster.sonic b{color:#fff;text-shadow:3px 3px 0 #0a1b5c,-6px 0 0 rgba(120,200,255,.45),-12px 0 0 rgba(120,200,255,.2)}
+#curtain .poster.spider{--rot:4deg;background:
+    repeating-radial-gradient(circle at 50% 120%,transparent 0 16px,rgba(0,0,0,.35) 16px 17px),
+    repeating-conic-gradient(from 0deg at 50% 120%,transparent 0 11deg,rgba(0,0,0,.35) 11deg 12deg),
+    linear-gradient(160deg,#e3122d,#7a0414)}
+#curtain .poster.spider b{color:#fff;text-shadow:3px 3px 0 #111,-3px 0 0 rgba(0,220,255,.55),3px 0 0 rgba(255,0,140,.45)}
+#curtain .poster::before,#curtain .poster::after{content:"★";position:absolute;top:50%;transform:translateY(-50%);color:#ffd77a;font-size:16px;text-shadow:0 1px 0 #5a3a06}
+#curtain .poster::before{left:6px}#curtain .poster::after{right:6px}
+@media (max-width:560px){#curtain .poster{padding:8px 10px 10px;max-width:calc(100% - 14px)}#curtain .poster b{font-size:min(4.4vw,24px)}#curtain .poster small{font-size:8px;letter-spacing:.2em}
+  #curtain .poster::before,#curtain .poster::after{display:none}}
 </style>
 </head>
 <body>
 
 <div id="curtain" role="status" aria-label="Bienvenue à MiniRiss — chargement">
-  <div class="panel left"></div><div class="panel right"></div>
+  <div class="panel left"><div class="poster sonic"><small>En piste</small><b>SONIC</b></div></div><div class="panel right"><div class="poster spider"><small>En piste</small><b>SPIDER-MILES</b></div></div>
   <div class="spot"></div>
   <div class="valance"></div>
   <div class="welcome">
